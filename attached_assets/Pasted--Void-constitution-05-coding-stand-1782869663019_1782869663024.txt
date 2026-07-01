@@ -1,0 +1,102 @@
+الآن سنكتب الملف التالي من دستور مشروع Void.
+
+اعمل على ملف واحد فقط:
+
+".constitution/05-coding-standards.md"
+
+لا تعدل أي ملف آخر.
+
+لا تنتقل إلى الملف التالي.
+
+هذا الملف هو المرجع الرسمي لجميع قواعد كتابة الكود داخل مشروع Void.
+
+الغرض منه هو توحيد أسلوب كتابة الكود بين جميع المطورين وأدوات الذكاء الاصطناعي، بحيث يبدو المشروع وكأنه كُتب بواسطة شخص واحد مهما تعدد المساهمون.
+
+لا تكتب أي كود برمجي.
+
+لا تنشئ أي ملفات جديدة.
+
+قم فقط بكتابة وثيقة هندسية احترافية ومفصلة.
+
+يجب أن تحتوي الوثيقة على الأقسام التالية على الأقل:
+
+- Coding Philosophy
+- Code Style Principles
+- Readability Rules
+- Maintainability Rules
+- Simplicity Rules
+- File Organization Rules
+- Folder Organization Rules
+- Class Design Rules
+- Interface Design Rules
+- Function Design Rules
+- Variable Naming Rules
+- Constant Naming Rules
+- File Naming Rules
+- Folder Naming Rules
+- Import Rules
+- Export Rules
+- Commenting Rules
+- Documentation Rules
+- Async Programming Rules
+- Error Handling Rules
+- Code Reuse Rules
+- Code Smells
+- Refactoring Rules
+- Anti Patterns
+- Review Checklist
+
+اشرح بالتفصيل قواعد كتابة المشروع، ومنها:
+
+- يجب أن يكون الكود واضحًا أكثر من كونه ذكيًا.
+- الوضوح مقدم على الاختصار.
+- يمنع كتابة كود يصعب فهمه.
+- يمنع اختصار أسماء المتغيرات بدون سبب.
+- يمنع استخدام الأسماء العامة مثل data أو temp أو value أو obj إلا عند الضرورة.
+- يجب أن تعبر أسماء المتغيرات والدوال والكلاسات عن مسؤوليتها بدقة.
+- يمنع إنشاء دوال طويلة.
+- يمنع إنشاء ملفات ضخمة.
+- يمنع إنشاء كلاسات تقوم بعدة مسؤوليات.
+- يمنع تكرار الكود.
+- يمنع استخدام الأرقام أو النصوص الثابتة داخل الكود (Magic Numbers وMagic Strings).
+- يمنع التعشيق العميق للشروط والحلقات.
+- يمنع استخدام any إلا عند الضرورة القصوى مع توضيح السبب.
+- يمنع استخدام الكود غير المستخدم أو التعليقات القديمة أو الأكواد المعطلة.
+- يجب إزالة Imports وExports غير المستخدمة.
+- يجب أن يكون كل تعديل متوافقًا مع أسلوب كتابة المشروع الحالي.
+
+أضف قسمًا بعنوان:
+
+"Code Smells"
+
+اشرح أشهر علامات الكود السيئ التي يجب اكتشافها أثناء التطوير.
+
+وأضف قسمًا بعنوان:
+
+"Anti Patterns"
+
+اشرح الأنماط الممنوعة داخل المشروع مثل:
+
+- Spaghetti Code.
+- God Class.
+- God Function.
+- Copy-Paste Programming.
+- Shotgun Surgery.
+- Feature Envy.
+- Primitive Obsession.
+- Large Switch Statements.
+- Excessive Nesting.
+- Hidden Side Effects.
+
+أضف قسمًا بعنوان:
+
+"Refactoring Rules"
+
+اشرح متى يسمح بإعادة هيكلة الكود، ومتى يمنع ذلك، وكيف يتم تنفيذ Refactoring دون كسر المشروع.
+
+في نهاية الوثيقة:
+
+- راجع جميع القواعد.
+- احذف أي تكرار.
+- تأكد أن الوثيقة لا تتعارض مع بقية ملفات الدستور.
+- اجعل هذه الوثيقة المرجع الرسمي لأي شخص يكتب كودًا داخل مشروع Void.
