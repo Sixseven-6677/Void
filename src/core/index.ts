@@ -25,6 +25,7 @@
 
 // ─── Errors ───────────────────────────────────────────────────────────────────
 export * from './errors/index.js';
+export { InternalError, type InternalErrorCode } from './errors/InternalError.js';
 
 // ─── Domain Types ─────────────────────────────────────────────────────────────
 export * from './types/index.js';
@@ -77,6 +78,8 @@ export type {
   RecurringJobOptions,
   CronExpression,
 } from './interfaces/IScheduler.js';
+
+export type { IService } from './interfaces/IService.js';
 
 // ─── DI Container ─────────────────────────────────────────────────────────────
 export { VoidContainer, type BindingFactory } from './container/container.js';

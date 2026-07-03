@@ -33,3 +33,4 @@ export type {
   RecurringJobOptions,
   CronExpression,
 } from './IScheduler.js';
+export type { IService } from './IService.js';

@@ -17,6 +17,7 @@
  * Core isolation principle. This container does exactly what Void needs and nothing more.
  */
 
+import { InternalError } from '../errors/InternalError.js';
 import type { Token } from './tokens.js';
 
 // ─── Binding ──────────────────────────────────────────────────────────────────
@@ -49,13 +50,16 @@ export class VoidContainer {
    * Register a factory for a token.
    * The factory is called lazily on the first resolve.
    *
-   * @throws Error if the token is already registered (prevent silent overwrites).
+   * @throws InternalError (CONTAINER_TOKEN_ALREADY_REGISTERED) if the token
+   *         is already registered. Call rebind() to intentionally replace.
    */
   bind<T>(token: Token, factory: BindingFactory<T>): this {
     if (this.factories.has(token)) {
-      throw new Error(
-        `VoidContainer: token ${String(token)} is already registered. ` +
-        'Call rebind() to intentionally replace a registration.',
+      throw new InternalError(
+        'CONTAINER_TOKEN_ALREADY_REGISTERED',
+        `Token ${String(token)} is already registered in the DI container. ` +
+        'Call rebind() to intentionally replace an existing registration.',
+        { context: { token: String(token) } },
       );
     }
     this.factories.set(token, factory as BindingFactory<unknown>);
@@ -87,8 +91,8 @@ export class VoidContainer {
    * Resolve a registered binding by token.
    * The instance is constructed once and cached for subsequent calls.
    *
-   * @throws Error if the token is not registered.
-   * @throws Error if a circular dependency is detected during resolution.
+   * @throws InternalError (CONTAINER_TOKEN_NOT_FOUND) if the token is not registered.
+   * @throws InternalError (CONTAINER_CIRCULAR_DEPENDENCY) if a cycle is detected.
    */
   resolve<T>(token: Token): T {
     // Return cached singleton if already constructed
@@ -101,18 +105,22 @@ export class VoidContainer {
       const cycle = [...this.resolutionStack, token]
         .map((t) => String(t))
         .join(' → ');
-      throw new Error(
-        `VoidContainer: circular dependency detected: ${cycle}. ` +
-        'Redesign the dependency graph — circular dependencies are a Core violation.',
+      throw new InternalError(
+        'CONTAINER_CIRCULAR_DEPENDENCY',
+        `Circular dependency detected in the DI container: ${cycle}. ` +
+        'Redesign the dependency graph — circular dependencies are a Core architecture violation.',
+        { context: { cycle } },
       );
     }
 
     // Ensure the token is registered
     const factory = this.factories.get(token);
     if (!factory) {
-      throw new Error(
-        `VoidContainer: no binding found for token ${String(token)}. ` +
+      throw new InternalError(
+        'CONTAINER_TOKEN_NOT_FOUND',
+        `No binding found for token ${String(token)} in the DI container. ` +
         'Register it with container.bind() before calling resolve().',
+        { context: { token: String(token) } },
       );
     }
 

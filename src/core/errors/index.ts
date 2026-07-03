@@ -22,3 +22,4 @@ export {
   InfrastructureError,
   type InfrastructureErrorCode,
 } from './InfrastructureError.js';
+export { InternalError, type InternalErrorCode } from './InternalError.js';
