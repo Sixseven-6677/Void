@@ -21,6 +21,7 @@ export const TOKENS = {
   // Infrastructure / Cross-cutting
   Logger:          Symbol.for('ILogger'),
   Config:          Symbol.for('IConfig'),
+  ConfigProvider:  Symbol.for('IConfigProvider'),
 
   // Facebook Layer contract
   FacebookClient:  Symbol.for('IFacebookClient'),

@@ -34,3 +34,4 @@ export type {
   CronExpression,
 } from './IScheduler.js';
 export type { IService } from './IService.js';
+export type { IConfigProvider } from './IConfigProvider.js';

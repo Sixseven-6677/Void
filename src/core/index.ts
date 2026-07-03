@@ -85,9 +85,15 @@ export type { IService } from './interfaces/IService.js';
 export { VoidContainer, type BindingFactory } from './container/container.js';
 export { TOKENS, type Token }                  from './container/tokens.js';
 
+// ─── Configuration Engine & Provider ─────────────────────────────────────────
+export type { IConfigProvider }                        from './interfaces/IConfigProvider.js';
+export type { IConfigSource, RawConfigMap }            from './config/sources/IConfigSource.js';
+export { EnvironmentSource }                           from './config/sources/EnvironmentSource.js';
+export { ConfigProvider, createDefaultConfigProvider } from './config/ConfigProvider.js';
+
 // ─── Application Bootstrap ────────────────────────────────────────────────────
-export { Application, type ApplicationOptions } from './bootstrap/Application.js';
-export { loadConfig }                            from './bootstrap/config.js';
+export { Application, type ApplicationOptions }        from './bootstrap/Application.js';
+export { buildConfig, type BuildConfigResult }         from './bootstrap/config.js';
 
 // ─── Application Kernel ───────────────────────────────────────────────────────
 export { Kernel, type KernelOptions }     from './kernel/Kernel.js';
