@@ -1,8 +1,21 @@
 # 11 — Session Management
 
 > **Status:** Official  
-> **Scope:** All session-related design decisions in Void — session creation, initialization, validation, storage, recovery, refresh, expiration, invalidation, and destruction  
-> **Authority:** This document is the single source of truth for session management policy across the entire Void project. It is to be read in conjunction with `10-facebook-architecture.md`. Any conflict between this document and other documents is resolved in favor of this document for session management concerns. Changes to session management policy require updating this document first.
+> **Scope:** **Facebook Authentication Sessions only** — the AppState, Cookies, and Access Tokens that maintain an authenticated connection to the Facebook platform. This document does NOT cover ConversationSession (user conversation state / currentStep / data), which is defined in `27-roadmap.md` Phase 4 and lives in the Application Layer.  
+> **Authority:** This document is the single source of truth for **Facebook Session Management** policy. It is to be read in conjunction with `10-facebook-architecture.md`. Any conflict between this document and other documents is resolved in favor of this document for Facebook session management concerns. Changes to Facebook session management policy require updating this document first.
+
+---
+
+> ### ⚠️ Session Type Disambiguation
+>
+> Void has two distinct session concepts. Do not confuse them:
+>
+> | Type | Contents | Layer | Managed By |
+> |---|---|---|---|
+> | **FacebookSession** | AppState + Cookies + Access Token | Facebook Layer |  (in ) |
+> | **ConversationSession** | currentStep + data + TTL | Application Layer |  (in  Phase 4) |
+>
+> **This file covers FacebookSession only.**
 
 ---
 
