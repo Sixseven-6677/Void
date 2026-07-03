@@ -88,3 +88,18 @@ export { TOKENS, type Token }                  from './container/tokens.js';
 // ─── Application Bootstrap ────────────────────────────────────────────────────
 export { Application, type ApplicationOptions } from './bootstrap/Application.js';
 export { loadConfig }                            from './bootstrap/config.js';
+
+// ─── Application Kernel ───────────────────────────────────────────────────────
+export { Kernel, type KernelOptions }     from './kernel/Kernel.js';
+export type { IKernelModule }              from './kernel/IKernelModule.js';
+export type { IKernelContext }             from './kernel/IKernelContext.js';
+export {
+  KernelPriority,
+  type KernelPhase,
+  type KernelHealth,
+  type ModuleHealth,
+  type ModuleHealthStatus,
+  type ShutdownReason,
+  type PhaseChangeEvent,
+  type PhaseChangeHandler,
+} from './kernel/kernel.types.js';
