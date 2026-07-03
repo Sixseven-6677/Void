@@ -14,7 +14,7 @@
 4. [المرحلة 1 — Core Framework](#4-المرحلة-1--core-framework)
 5. [المرحلة 2 — Facebook Layer](#5-المرحلة-2--facebook-layer)
 6. [المرحلة 3 — Authentication](#6-المرحلة-3--authentication)
-7. [المرحلة 4 — Session Management](#7-المرحلة-4--session-management)
+7. [المرحلة 4 — Conversation Session Management](#7-المرحلة-4--conversation-session-management)
 8. [المرحلة 5 — Event System](#8-المرحلة-5--event-system)
 9. [المرحلة 6 — Command System](#9-المرحلة-6--command-system)
 10. [المرحلة 7 — Plugin System](#10-المرحلة-7--plugin-system)
@@ -54,7 +54,7 @@ Void هو **Framework متكامل لبناء بوتات Facebook Messenger** ب
 المرحلة 1: Core Framework      ← Interfaces والـ DI وهيكل التطبيق
 المرحلة 2: Facebook Layer      ← الاتصال بـ Facebook API
 المرحلة 3: Authentication      ← التحقق من هوية المستخدمين
-المرحلة 4: Session Management  ← إدارة حالة المحادثة
+المرحلة 4: Conversation Session ← إدارة حالة المحادثة مع المستخدم
 المرحلة 5: Event System        ← التواصل الداخلي بين المكونات
 المرحلة 6: Command System      ← معالجة رسائل المستخدم
 المرحلة 7: Plugin System       ← التوسع والتخصيص
@@ -310,10 +310,12 @@ Void هو **Framework متكامل لبناء بوتات Facebook Messenger** ب
 
 ---
 
-## 7. المرحلة 4 — Session Management
+## 7. المرحلة 4 — Conversation Session Management
 
 > **الأولوية:** P0 — حرجة
 > **الحالة:** ⏳ لم تبدأ
+
+> **⚠️ ملاحظة مفهومية مهمة:** هذه المرحلة تُعرِّف **ConversationSession** — حالة المحادثة مع المستخدم (currentStep، data، TTL). هذا مختلف كلياً عن **FacebookSession** (AppState، Cookies، Tokens) الذي يُعرَّف في `11-session-management.md` ويُدار داخل Facebook Layer حصراً.
 
 ### الهدف
 
@@ -329,7 +331,7 @@ Void هو **Framework متكامل لبناء بوتات Facebook Messenger** ب
     - data (بيانات مخصصة مرنة)
     - createdAt, updatedAt, expiresAt
 
-✦ SessionService (يُطبّق ISessionService):
+✦ ConversationSessionService (يُطبّق IConversationSessionService):
     - getOrCreateSession(userId) → Session
     - updateSession(sessionId, data) → Session
     - deleteSession(sessionId) → void
