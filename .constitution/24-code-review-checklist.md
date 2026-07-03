@@ -47,7 +47,7 @@ All items without a symbol are 🔴 Blocking unless otherwise noted.
 
 ## 1. Architecture
 
-> Reference: `01-architecture-overview.md` through `14-plugin-rules.md`
+> Reference: `01-project-philosophy.md`, `02-architecture.md` through `14-event-system.md`
 
 ### 1.1 Layer Placement
 
@@ -451,7 +451,7 @@ All items without a symbol are 🔴 Blocking unless otherwise noted.
 
 ## 13. Sessions
 
-> Reference: `12-session-rules.md` and `13-session-state-machine.md`
+> Reference: `11-session-management.md` (FacebookSession) — for ConversationSession see `27-roadmap.md` Phase 4
 
 ### 13.1 Session Lifecycle
 
