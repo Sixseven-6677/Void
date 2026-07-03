@@ -104,37 +104,43 @@ Incoming Request
   1. Logging (Request In)
        │
        ▼
-  2. Cancellation / Deadline Propagation
+  2. Signature Verification          ← Facebook X-Hub-Signature-256 check — MUST be second
        │
        ▼
-  3. Request ID / Correlation ID Attachment
+  3. Session Loading                  ← Load FacebookSession + ConversationSession
        │
        ▼
-  4. Rate Limiting (Global)
+  4. Cancellation / Deadline Propagation
        │
        ▼
-  5. Authentication
+  5. Request ID / Correlation ID Attachment
        │
        ▼
-  6. Authorization
+  6. Rate Limiting (Global)
        │
        ▼
-  7. Rate Limiting (Per-User / Per-Resource)
+  7. Authentication
        │
        ▼
-  8. Input Validation
+  8. Authorization
        │
        ▼
-  9. Handler (Command / Controller / Event)
+  9. Rate Limiting (Per-User / Per-Resource)
        │
        ▼
- 10. Response Normalization
+ 10. Input Validation
        │
        ▼
- 11. Error Handling (catches from any prior stage)
+ 11. Handler (Command / Controller / Event)
        │
        ▼
- 12. Logging (Request Out)
+ 12. Response Normalization
+       │
+       ▼
+ 13. Error Handling (catches from any prior stage)
+       │
+       ▼
+ 14. Logging (Request Out)
        │
        ▼
 Outgoing Response
@@ -145,6 +151,8 @@ Outgoing Response
 Each position in the order is chosen to minimize unnecessary work and maximize security:
 
 - **Logging first:** The request is recorded before any processing — even rejected requests produce a log entry
+- **Signature Verification second:** The Facebook X-Hub-Signature-256 header is validated immediately. Any request that cannot prove Facebook origin is rejected before touching the session store, rate limiter, or auth system. This is a hard security boundary that cannot be moved later in the pipeline.
+- **Session Loading third:** Both FacebookSession and ConversationSession are loaded here so all downstream middleware and the handler have full typed context
 - **Cancellation early:** Cancelled or timed-out requests are detected before expensive operations begin
 - **Correlation ID before everything:** Every log entry from every subsequent stage carries the same ID
 - **Global rate limiting before authentication:** Unauthenticated flooding is stopped without touching the auth system
