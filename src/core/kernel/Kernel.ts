@@ -36,15 +36,38 @@ import type { VoidContainer } from '../container/container.js';
 import { TOKENS } from '../container/tokens.js';
 import type { IKernelModule } from './IKernelModule.js';
 import type { IKernelContext } from './IKernelContext.js';
-import type {
-  KernelHealth,
-  KernelPhase,
-  ModuleHealth,
-  ModuleHealthStatus,
-  PhaseChangeEvent,
-  PhaseChangeHandler,
-  ShutdownReason,
+import {
+  KernelPriority,
+  type KernelHealth,
+  type KernelPhase,
+  type ModuleHealth,
+  type ModuleHealthStatus,
+  type PhaseChangeEvent,
+  type PhaseChangeHandler,
+  type ShutdownReason,
 } from './kernel.types.js';
+
+// ─── Allowed Phase Transitions ────────────────────────────────────────────────
+
+/**
+ * The explicit state machine graph for the Kernel lifecycle.
+ * Any transition not listed here is an invariant violation.
+ *
+ *   CREATED  → BOOTING
+ *   BOOTING  → READY | CRASHED
+ *   READY    → STOPPING
+ *   STOPPING → STOPPED | CRASHED
+ *   CRASHED  → (terminal — no transitions out)
+ *   STOPPED  → (terminal — no transitions out)
+ */
+const ALLOWED_TRANSITIONS: Readonly<Record<KernelPhase, ReadonlyArray<KernelPhase>>> = {
+  CREATED:  ['BOOTING'],
+  BOOTING:  ['READY', 'CRASHED'],
+  READY:    ['STOPPING'],
+  STOPPING: ['STOPPED', 'CRASHED'],
+  STOPPED:  [],
+  CRASHED:  [],
+};
 
 // ─── Kernel Options ───────────────────────────────────────────────────────────
 
@@ -187,6 +210,18 @@ export class Kernel {
 
   private transitionTo(next: KernelPhase): void {
     const previous = this._phase;
+
+    // Enforce the state machine graph — illegal transitions are programming errors.
+    const allowed = ALLOWED_TRANSITIONS[previous];
+    if (!allowed.includes(next)) {
+      throw new InternalError(
+        'KERNEL_INVALID_PHASE',
+        `Illegal Kernel phase transition: "${previous}" → "${next}". ` +
+        `Allowed transitions from "${previous}": [${allowed.join(', ') || 'none — terminal state'}].`,
+        { context: { previousPhase: previous, nextPhase: next } },
+      );
+    }
+
     this._phase = next;
 
     const event: PhaseChangeEvent = {
@@ -329,7 +364,16 @@ export class Kernel {
       this.logger.fatal('Kernel boot failed — entering CRASHED state', {
         error: err instanceof Error ? err.message : String(err),
       });
-      throw err;
+      // Normalize to InternalError so callers always receive a typed error.
+      // Preserve the original error as the cause for debugging.
+      if (err instanceof InternalError) {
+        throw err;
+      }
+      throw new InternalError(
+        'KERNEL_MODULE_BOOT_FAILED',
+        `Kernel boot failed: ${err instanceof Error ? err.message : String(err)}`,
+        { cause: err },
+      );
     }
   }
 
@@ -365,17 +409,32 @@ export class Kernel {
       timeoutMs: this.shutdownTimeoutMs,
     });
 
-    const sorted = this.sortedModules().reverse(); // Descending priority
+    // Top-level try/catch: shutdown must NEVER reject.
+    // If something outside callStop() fails (e.g. sorting, logging),
+    // we still force a terminal phase so callers can exit cleanly.
+    try {
+      const sorted = this.sortedModules().reverse(); // Descending priority
 
-    for (const entry of sorted) {
-      if (entry.status !== 'READY' && entry.status !== 'BOOTED') {
-        continue; // Skip modules that never started or already failed
+      for (const entry of sorted) {
+        if (entry.status !== 'READY' && entry.status !== 'BOOTED') {
+          continue; // Skip modules that never started or already failed
+        }
+        await this.callStop(entry);
       }
-      await this.callStop(entry);
-    }
 
-    this.transitionTo('STOPPED');
-    this.logger?.info('Kernel stopped cleanly', { reason });
+      this.transitionTo('STOPPED');
+      this.logger?.info('Kernel stopped cleanly', { reason });
+
+    } catch (err) {
+      // Force CRASHED so the process can inspect final state before exiting.
+      // Do not rethrow — shutdown must always resolve.
+      this.logger?.error('Kernel shutdown encountered an unexpected error — forcing CRASHED', {
+        reason,
+        error: err instanceof Error ? err.message : String(err),
+      });
+      this._phase = 'CRASHED'; // Direct assignment — transitionTo(CRASHED) from STOPPING is valid
+      // but if the transition itself threw, we must not call transitionTo again.
+    }
   }
 
   // ─── Health ──────────────────────────────────────────────────────────────
@@ -504,8 +563,10 @@ export class Kernel {
         module: entry.module.name,
       });
 
-      // Critical modules (INFRASTRUCTURE band) failing aborts the entire boot
-      if (entry.module.priority < 200) {
+      // Critical modules (INFRASTRUCTURE band) failing aborts the entire boot.
+      // Uses KernelPriority.CORE_SERVICES as threshold — anything below that
+      // is infrastructure-level and must start successfully.
+      if (entry.module.priority < KernelPriority.CORE_SERVICES) {
         throw new InternalError(
           'KERNEL_MODULE_BOOT_FAILED',
           `Critical module "${entry.module.name}" failed to boot. ` +
