@@ -67,13 +67,16 @@ export interface IConfigProvider {
    *   - Secret rotation: the application is running and a secret has changed.
    *   - Test isolation: reset configuration between test runs.
    *
-   * Callers are responsible for handling any ConfigError thrown during reload.
-   * If reload fails, the previous cached config remains available (unchanged).
+   * Atomicity guarantee:
+   *   The cache is updated ONLY after all sources have been read and the new
+   *   config has passed validation. If loading or validation fails, the
+   *   previously cached config is PRESERVED — the application keeps running on
+   *   the last known-good configuration. The error propagates to the caller.
    *
    * RULE: Normal, steady-state application code MUST NOT call reload().
    *       It is an operational tool, not a runtime code path.
    *
-   * @throws ConfigError if loading or validation fails.
+   * @throws ConfigError if loading or validation fails (old config preserved).
    */
   reload(): Promise<IConfig>;
 

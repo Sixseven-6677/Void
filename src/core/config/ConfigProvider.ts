@@ -80,13 +80,19 @@ export class ConfigProvider implements IConfigProvider {
   /**
    * Force a full reload from all registered sources, bypassing the cache.
    *
-   * If validation fails, the error is thrown and the cache is left empty
-   * (the previous entry was already cleared by invalidate()). Callers that
-   * need fault-tolerance on reload should catch ConfigError and fall back to
-   * the previously-loaded IConfig if desired.
+   * Atomicity guarantee:
+   *   The cache is updated ONLY after all sources have been read and the
+   *   new config has passed validation. If loading or validation fails, the
+   *   previously cached config is preserved — the application keeps running
+   *   on the last known-good configuration.
+   *
+   * Failure contract:
+   *   The thrown ConfigError describes what went wrong. The cache is
+   *   untouched. The next call to get() returns the old config unchanged.
    */
   async reload(): Promise<IConfig> {
-    this.cache.invalidate();
+    // Do NOT invalidate the cache before loading. loadAndCache() overwrites
+    // the cache only on success — a failure leaves the old entry intact.
     return this.loadAndCache();
   }
 

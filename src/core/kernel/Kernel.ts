@@ -161,15 +161,29 @@ export class Kernel {
    * FOR TESTING ONLY. Must not be called in production code.
    * Allows test suites to create a fresh Kernel between tests.
    *
+   * Constitution note — permitted process.env exception:
+   *   This is the ONLY location in the codebase outside EnvironmentSource that
+   *   may read process.env. The exception is justified because:
+   *     1. This is a test-only guard, not configuration access.
+   *     2. IConfig is unavailable at this point — the method resets the singleton
+   *        that would normally hold a reference to the loaded config.
+   *     3. NODE_ENV is not a secret; reading it here carries no security risk.
+   *   All other process.env access remains prohibited. See EnvironmentSource.
+   *
    * @throws InternalError(INVARIANT_VIOLATION) if called outside test environments.
    */
   static _destroyForTesting(): void {
-    if (process.env['NODE_ENV'] !== 'test') {
+    // Permitted exception — see constitution note in JSDoc above.
+    const isTestEnv = process.env['NODE_ENV'] === 'test';
+    if (!isTestEnv) {
       throw new InternalError(
         'INVARIANT_VIOLATION',
         'Kernel._destroyForTesting() may only be called in test environments. ' +
         'NODE_ENV must be "test".',
-        { context: { nodeEnv: process.env['NODE_ENV'] } },
+        // Intentionally omit the actual NODE_ENV value from context —
+        // it may be an unexpected string and error context must not log
+        // values that were not explicitly validated beforehand.
+        { context: { isTestEnv: false } },
       );
     }
     Kernel._instance = null;
