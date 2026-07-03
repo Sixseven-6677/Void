@@ -91,6 +91,12 @@ export type { IConfigSource, RawConfigMap }            from './config/sources/IC
 export { EnvironmentSource }                           from './config/sources/EnvironmentSource.js';
 export { ConfigProvider, createDefaultConfigProvider } from './config/ConfigProvider.js';
 
+// ─── Environment Loader ───────────────────────────────────────────────────────
+export type { EnvFileDescriptor }                        from './config/loader/EnvFileLoader.js';
+export { EnvFileLoader }                                 from './config/loader/EnvFileLoader.js';
+export { EnvironmentLoader, type EnvironmentLoaderOptions } from './config/loader/EnvironmentLoader.js';
+export { VOID_REQUIRED_KEYS, type RequiredKey }          from './config/loader/RequiredKeys.js';
+
 // ─── Application Bootstrap ────────────────────────────────────────────────────
 export { Application, type ApplicationOptions }        from './bootstrap/Application.js';
 export { buildConfig, type BuildConfigResult }         from './bootstrap/config.js';

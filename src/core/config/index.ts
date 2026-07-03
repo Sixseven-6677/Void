@@ -38,5 +38,11 @@
 export type { IConfigSource, RawConfigMap }  from './sources/IConfigSource.js';
 export { EnvironmentSource }                 from './sources/EnvironmentSource.js';
 
+// Loader — file-based configuration loading with existence and required-key checks
+export type { EnvFileDescriptor }                        from './loader/EnvFileLoader.js';
+export { EnvFileLoader }                                 from './loader/EnvFileLoader.js';
+export { EnvironmentLoader, type EnvironmentLoaderOptions } from './loader/EnvironmentLoader.js';
+export { VOID_REQUIRED_KEYS, type RequiredKey }          from './loader/RequiredKeys.js';
+
 // Provider — the public face of the configuration system
 export { ConfigProvider, createDefaultConfigProvider } from './ConfigProvider.js';
